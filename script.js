@@ -4,91 +4,10 @@ let chats = [];
 let currentChatId = null;
 let apiKey = localStorage.getItem('apiKey') || "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";
 
-function generateId() {
-  return Math.random().toString(36).substr(2, 9);
-}
-
-function formatTime(date = new Date()) {
-  return date.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
-}
-
-function checkAPIStatus() {
-  fetch("https://openrouter.ai/api/v1/models")
-    .then(response => {
-      if (!response.ok) {
-        console.error("مشكلة في اتصال OpenRouter API");
-      } else {
-        console.log("اتصال API يعمل بشكل صحيح");
-      }
-    })
-    .catch(error => console.error("فشل الاتصال بـ OpenRouter:", error));
-}
-
-function loadChatsFromServer() {
-  fetch("https://your-domain.com/get_chats")
-    .then(response => response.json())
-    .then(data => {
-      chats = data.map(chat => ({
-        id: chat.id,
-        title: chat.title,
-        messages: chat.messages.map(msg => ({
-          ...msg,
-          timestamp: new Date(msg.timestamp)
-        }))
-      }));
-      if (chats.length > 0) {
-        currentChatId = chats[0].id;
-        updateChatList();
-        renderMessages();
-      }
-    });
-}
-
-function saveChatToServer(chat) {
-  fetch("https://your-domain.com/save_chat", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      chat_id: chat.id,
-      title: chat.title,
-      messages: chat.messages
-    })
-  });
-}
-
 document.addEventListener("DOMContentLoaded", () => {
   checkAPIStatus();
   initEmojis();
   loadProfile();
-  loadChatsFromServer();
-
-  document.addEventListener("click", function (event) {
-    const sidebar = document.getElementById("sidebar");
-    const dropdown = document.getElementById("dropdown");
-    const settingsModal = document.getElementById("settings-modal");
-    const emojiContainer = document.getElementById("emoji-container");
-    const menuBtn = document.querySelector(".header-btn");
-    const plusBtn = document.querySelector(".fa-paperclip").closest(".input-btn");
-    const emojiBtn = document.querySelector(".fa-smile").closest(".input-btn");
-
-    if (sidebar.classList.contains("visible") && !sidebar.contains(event.target) && !menuBtn.contains(event.target)) {
-      sidebar.classList.remove("visible");
-    }
-
-    if (dropdown.style.display === "flex" && !dropdown.contains(event.target) && !plusBtn.contains(event.target)) {
-      dropdown.style.display = "none";
-    }
-
-    if (settingsModal.style.display === "flex" && event.target === settingsModal) {
-      closeSettings();
-    }
-
-    if (emojiContainer.style.display === "block" && !emojiContainer.contains(event.target) && !emojiBtn.contains(event.target)) {
-      emojiContainer.style.display = "none";
-    }
-  });
   
   // إظهار زر لوحة التحكم للإدمن فقط
   const isAdmin = localStorage.getItem('is_admin') === 'true';
@@ -101,9 +20,14 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
   }
+  
+  // التحقق من تسجيل الدخول
+  const userId = localStorage.getItem('user_id');
+  if (!userId) {
+    window.location.href = 'login.html';
+  }
 });
 
-// باقي الكود كما هو بدون تغيير
 function toggleSidebar() {
   document.getElementById("sidebar").classList.toggle("visible");
 }
@@ -159,14 +83,49 @@ function promptForImage() {
 }
 
 function saveSettings() {
-  localStorage.setItem("fullName", document.getElementById("full-name").value);
-  localStorage.setItem("username", document.getElementById("username").value);
-  localStorage.setItem("email", document.getElementById("email").value);
-  localStorage.setItem("profileImage", document.getElementById("profile-image").src);
-  apiKey = document.getElementById('api-key').value;
-  localStorage.setItem('apiKey', apiKey);
-  closeSettings();
-  alert("تم حفظ الإعدادات بنجاح!");
+  const userId = localStorage.getItem('user_id');
+  if (!userId) {
+    alert("يرجى تسجيل الدخول أولاً");
+    return;
+  }
+  
+  const profileData = {
+    user_id: userId,
+    fullname: document.getElementById("full-name").value,
+    username: document.getElementById("username").value,
+    email: document.getElementById("email").value
+  };
+  
+  // تحديث الملف الشخصي في قاعدة البيانات
+  fetch("https://yemen-chat-version-8.onrender.com/update-profile", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(profileData)
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      // حفظ البيانات محلياً
+      localStorage.setItem("fullName", profileData.fullname);
+      localStorage.setItem("username", profileData.username);
+      localStorage.setItem("email", profileData.email);
+      
+      // حفظ صورة الملف الشخصي
+      const img = document.getElementById("profile-image").src;
+      if (img) {
+        localStorage.setItem("profileImage", img);
+      }
+      
+      // حفظ مفتاح API
+      apiKey = document.getElementById('api-key').value;
+      localStorage.setItem('apiKey', apiKey);
+      
+      alert("تم حفظ الإعدادات بنجاح!");
+      closeSettings();
+    } else {
+      alert("فشل في تحديث الملف الشخصي: " + (data.error || ""));
+    }
+  });
 }
 
 function loadProfile() {
@@ -200,7 +159,6 @@ function copyMessage(button) {
     setTimeout(() => button.innerHTML = '<i class="fas fa-copy"></i>', 2000);
   });
 }
-
 
 function escapeHtml(unsafe) {
   return unsafe
@@ -250,7 +208,7 @@ function renderMessages() {
     if (welcome) {
       chatWindow.innerHTML = welcome.outerHTML;
     } else {
-      chatWindow.innerHTML = ""; // احتياطي
+      chatWindow.innerHTML = "";
     }
     return;
   }
@@ -357,7 +315,6 @@ function sendMessage(customPrompt = null) {
 
       chat.messages.push({ role: "assistant", content: errorMsg, timestamp: new Date() });
       renderMessages();
-      saveChatToServer(chat);
     });
 }
 
@@ -371,7 +328,6 @@ function startNewChat() {
   currentChatId = newChat.id;
   updateChatList();
   renderMessages();
-  saveChatToServer(newChat);
 }
 
 function updateChatList() {
@@ -415,4 +371,24 @@ function uploadFile(type) {
 
 function goToHome() {
   window.location.href = "index.html";
+}
+
+function generateId() {
+  return Math.random().toString(36).substr(2, 9);
+}
+
+function formatTime(date = new Date()) {
+  return date.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+}
+
+function checkAPIStatus() {
+  fetch("https://openrouter.ai/api/v1/models")
+    .then(response => {
+      if (!response.ok) {
+        console.error("مشكلة في اتصال OpenRouter API");
+      } else {
+        console.log("اتصال API يعمل بشكل صحيح");
+      }
+    })
+    .catch(error => console.error("فشل الاتصال بـ OpenRouter:", error));
 }

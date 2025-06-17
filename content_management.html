@@ -2,69 +2,134 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <title>إدارة المحتوى</title>
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>نظام إدارة المحتوى</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    * {
+    /* ... (النمط السابق) ... */
+       * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
       font-family: 'Tajawal', sans-serif;
     }
     
     body {
-      background-color: #f0f5ff;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
       padding: 20px;
-      margin: 0;
+      min-height: 100vh;
     }
     
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    /* رأس الصفحة */
     .admin-header {
       background: linear-gradient(to right, #2c3e50, #4a6491);
       color: white;
-      padding: 20px;
-      border-radius: 10px;
+      padding: 25px 30px;
+      border-radius: 15px;
       margin-bottom: 30px;
-      text-align: center;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .admin-header::before {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+      transform: rotate(30deg);
     }
     
     .admin-header h1 {
       margin: 0;
-      padding: 10px;
+      padding: 10px 0;
+      font-size: 2.2rem;
+      position: relative;
     }
     
-    .content-actions {
-      max-width: 1200px;
-      margin: 0 auto 30px;
+    .admin-header p {
+      margin: 0;
+      opacity: 0.9;
+      font-size: 1.1rem;
+      position: relative;
+    }
+    
+    .user-info {
+      position: absolute;
+      top: 20px;
+      left: 20px;
       display: flex;
-      justify-content: flex-end;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .user-info img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid white;
+    }
+    
+    /* أزرار الإجراءات */
+    .content-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+      gap: 15px;
     }
     
     .btn {
-      padding: 10px 20px;
+      padding: 12px 25px;
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
       font-weight: bold;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
+      transition: all 0.3s ease;
+      font-size: 1rem;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     }
     
     .btn-add {
-      background: #2ecc71;
+      background: linear-gradient(to right, #2ecc71, #27ae60);
       color: white;
     }
     
     .btn-add:hover {
-      background: #27ae60;
+      transform: translateY(-3px);
+      box-shadow: 0 6px 10px rgba(0,0,0,0.15);
     }
     
+    .btn-logout {
+      background: linear-gradient(to right, #e74c3c, #c0392b);
+      color: white;
+    }
+    
+    .btn-logout:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 10px rgba(0,0,0,0.15);
+    }
+    
+    /* جدول المحتوى */
     .content-list {
-      max-width: 1200px;
-      margin: 0 auto;
       background: white;
-      border-radius: 12px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
       overflow: hidden;
+      margin-bottom: 40px;
     }
     
     table {
@@ -73,104 +138,650 @@
     }
     
     th, td {
-      padding: 15px;
+      padding: 18px 20px;
       text-align: right;
-      border-bottom: 1px solid #eee;
+    }
+    
+    thead {
+      background: linear-gradient(to right, #3498db, #2980b9);
+      color: white;
     }
     
     th {
-      background: #f8f9fa;
-      color: #2c3e50;
-      font-weight: bold;
+      font-weight: 600;
+      border-bottom: 2px solid #eee;
     }
     
-    tr:hover {
-      background: #f5f7fa;
+    tbody tr {
+      border-bottom: 1px solid #f0f0f0;
+      transition: background 0.2s;
+    }
+    
+    tbody tr:last-child {
+      border-bottom: none;
+    }
+    
+    tbody tr:hover {
+      background: #f8f9ff;
     }
     
     .action-btn {
-      padding: 6px 12px;
+      padding: 8px 15px;
       border: none;
-      border-radius: 4px;
+      border-radius: 6px;
       cursor: pointer;
       font-size: 14px;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
     
     .edit-btn {
-      background: #3498db;
+      background: linear-gradient(to right, #3498db, #2980b9);
       color: white;
     }
     
+    .edit-btn:hover {
+      transform: translateY(-2px);
+    }
+    
     .delete-btn {
-      background: #e74c3c;
+      background: linear-gradient(to right, #e74c3c, #c0392b);
       color: white;
+      margin-right: 8px;
+    }
+    
+    .delete-btn:hover {
+      transform: translateY(-2px);
+    }
+    
+    .status-published {
+      background-color: #2ecc71;
+      color: white;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      display: inline-block;
+    }
+    
+    .status-draft {
+      background-color: #f39c12;
+      color: white;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      display: inline-block;
+    }
+    
+    /* نموذج إضافة محتوى */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .modal-content {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      border-radius: 15px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+      overflow: hidden;
+      animation: modalOpen 0.4s ease;
+    }
+    
+    @keyframes modalOpen {
+      from {
+        opacity: 0;
+        transform: translateY(-50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .modal-header {
+      background: linear-gradient(to right, #2c3e50, #4a6491);
+      color: white;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .modal-header h2 {
+      margin: 0;
+    }
+    
+    .close-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    
+    .close-btn:hover {
+      transform: rotate(90deg);
+    }
+    
+    .modal-body {
+      padding: 25px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: #2c3e50;
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-family: 'Tajawal', sans-serif;
+      transition: border 0.3s;
+    }
+    
+    .form-control:focus {
+      outline: none;
+      border-color: #3498db;
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+    }
+    
+    .btn-submit {
+      background: linear-gradient(to right, #2ecc71, #27ae60);
+      color: white;
+      border: none;
+      padding: 14px 25px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: block;
+      width: 100%;
+      transition: all 0.3s;
+      margin-top: 15px;
+    }
+    
+    .btn-submit:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 10px rgba(0,0,0,0.15);
+    }
+    
+    /* تصميم متجاوب */
+    @media (max-width: 768px) {
+      th, td {
+        padding: 12px 15px;
+      }
+      
+      .content-actions {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+      
+      .modal-content {
+        width: 95%;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .admin-header {
+        padding: 20px 15px;
+      }
+      
+      .admin-header h1 {
+        font-size: 1.8rem;
+      }
+      
+      .user-info span {
+        display: none;
+      }
+    }
+    
+    /* الرسائل */
+    .message {
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .success {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    
+    .error {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    
+    /* فلاتر البحث */
+    .filters {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    
+    .filter-group {
+      flex: 1;
+      min-width: 200px;
+    }
+    
+    /* إضافة لحقل الصورة */
+    .image-preview {
+      width: 100%;
+      max-height: 200px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-top: 10px;
+      display: none;
     }
   </style>
 </head>
 <body>
-  <div class="admin-header">
-    <h1>إدارة المحتوى</h1>
-    <p>إدارة المقالات والصفحات والمحتوى المنشور</p>
+  <div class="container">
+    <div class="admin-header">
+      <div class="user-info">
+        <img src="https://ui-avatars.com/api/?name=مدير+النظام&background=3498db&color=fff" alt="صورة المستخدم">
+        <span>مدير النظام</span>
+      </div>
+      <h1>نظام إدارة المحتوى</h1>
+      <p>إدارة الأخبار والمقالات والمحتوى المنشور</p>
+    </div>
+    
+    <div class="content-actions">
+      <button class="btn btn-add" id="addContentBtn">
+        <i class="fas fa-plus"></i> إضافة خبر جديد
+      </button>
+      <button class="btn btn-logout" id="logoutBtn">
+        <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+      </button>
+    </div>
+    
+    <div class="filters">
+      <div class="filter-group">
+        <label for="searchInput">بحث:</label>
+        <input type="text" id="searchInput" class="form-control" placeholder="ابحث بعنوان الخبر...">
+      </div>
+      <div class="filter-group">
+        <label for="typeFilter">نوع المحتوى:</label>
+        <select id="typeFilter" class="form-control">
+          <option value="all">جميع الأنواع</option>
+          <option value="خبر">خبر</option>
+          <option value="مقالة">مقالة</option>
+          <option value="صفحة">صفحة</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="statusFilter">حالة المحتوى:</label>
+        <select id="statusFilter" class="form-control">
+          <option value="all">جميع الحالات</option>
+          <option value="منشور">منشور</option>
+          <option value="مسودة">مسودة</option>
+        </select>
+      </div>
+    </div>
+    
+    <div class="content-list">
+      <table>
+        <thead>
+          <tr>
+            <th>العنوان</th>
+            <th>النوع</th>
+            <th>تاريخ النشر</th>
+            <th>الحالة</th>
+            <th>الإجراءات</th>
+          </tr>
+        </thead>
+        <tbody id="contentTable"></tbody>
+      </table>
+    </div>
+    
+    <div id="noContentMessage" class="message" style="display: none; background-color: #f0f5ff; color: #2c3e50;">
+      <i class="fas fa-info-circle"></i>
+      <span>لا يوجد محتوى لعرضه. قم بإضافة محتوى جديد.</span>
+    </div>
   </div>
   
-  <div class="content-actions">
-    <button class="btn btn-add">
-      <i class="fas fa-plus"></i> إضافة محتوى جديد
-    </button>
-  </div>
-  
-  <div class="content-list">
-    <table>
-      <thead>
-        <tr>
-          <th>العنوان</th>
-          <th>النوع</th>
-          <th>تاريخ النشر</th>
-          <th>الحالة</th>
-          <th>الإجراءات</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>دليل استخدام المساعد الذكي</td>
-          <td>مقالة</td>
-          <td>2023-10-15</td>
-          <td>منشور</td>
-          <td>
-            <button class="action-btn edit-btn">تعديل</button>
-            <button class="action-btn delete-btn">حذف</button>
-          </td>
-        </tr>
-        <tr>
-          <td>كيفية كتابة الأكواد بمساعدة الذكاء الاصطناعي</td>
-          <td>مقالة</td>
-          <td>2023-10-10</td>
-          <td>مسودة</td>
-          <td>
-            <button class="action-btn edit-btn">تعديل</button>
-            <button class="action-btn delete-btn">حذف</button>
-          </td>
-        </tr>
-        <tr>
-          <td>الصفحة الرئيسية</td>
-          <td>صفحة</td>
-          <td>2023-09-28</td>
-          <td>منشور</td>
-          <td>
-            <button class="action-btn edit-btn">تعديل</button>
-            <button class="action-btn delete-btn">حذف</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="modal" id="contentModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalTitle">إضافة خبر جديد</h2>
+        <button class="close-btn" id="closeModalBtn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="message" id="formMessage" style="display: none;"></div>
+        
+        <form id="contentForm">
+          <input type="hidden" id="contentId">
+          
+          <div class="form-group">
+            <label for="title">عنوان الخبر *</label>
+            <input type="text" id="title" class="form-control" placeholder="أدخل عنوان الخبر" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="type">نوع المحتوى *</label>
+            <select id="type" class="form-control" required>
+              <option value="">اختر النوع</option>
+              <option value="خبر">خبر</option>
+              <option value="مقالة">مقالة</option>
+              <option value="صفحة">صفحة</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="content">محتوى الخبر *</label>
+            <textarea id="content" class="form-control" rows="5" placeholder="أدخل محتوى الخبر" required></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="imageUrl">رابط صورة الخبر:</label>
+            <input type="text" id="imageUrl" class="form-control" placeholder="أدخل رابط الصورة">
+            <img id="imagePreview" class="image-preview" alt="معاينة الصورة">
+          </div>
+          
+          <div class="form-group">
+            <label for="status">حالة المحتوى *</label>
+            <select id="status" class="form-control" required>
+              <option value="">اختر الحالة</option>
+              <option value="منشور">منشور</option>
+              <option value="مسودة">مسودة</option>
+            </select>
+          </div>
+          
+          <button type="submit" class="btn-submit">
+            <i class="fas fa-save"></i> حفظ المحتوى
+          </button>
+        </form>
+      </div>
+    </div>
   </div>
 
   <script>
-    // التحقق من صلاحيات المشرف
-    if(localStorage.getItem('is_admin') !== 'true') {
-      alert('ليس لديك صلاحية الوصول إلى هذه الصفحة');
-      window.location.href = 'login.html';
+    // بيانات المحتوى
+    let contents = [];
+    
+    // عناصر DOM
+    const contentTable = document.getElementById('contentTable');
+    const contentModal = document.getElementById('contentModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const contentForm = document.getElementById('contentForm');
+    const addContentBtn = document.getElementById('addContentBtn');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const formMessage = document.getElementById('formMessage');
+    const searchInput = document.getElementById('searchInput');
+    const typeFilter = document.getElementById('typeFilter');
+    const statusFilter = document.getElementById('statusFilter');
+    const noContentMessage = document.getElementById('noContentMessage');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const imageUrlInput = document.getElementById('imageUrl');
+    const imagePreview = document.getElementById('imagePreview');
+    
+    // تحميل المحتوى عند بدء التشغيل
+    document.addEventListener('DOMContentLoaded', () => {
+      loadContents();
+      
+      // التحقق من صلاحيات المشرف
+      if(localStorage.getItem('is_admin') !== 'true') {
+        alert('ليس لديك صلاحية الوصول إلى هذه الصفحة');
+        window.location.href = 'login.html';
+      }
+    });
+    
+    // تحميل المحتويات من الخادم
+    function loadContents() {
+      fetch("https://yemen-chat-version-8.onrender.com/news")
+        .then(res => res.json())
+        .then(data => {
+          contents = data;
+          renderContents(contents);
+        });
     }
+    
+    // عرض المحتوى في الجدول
+    function renderContents(contentsArray) {
+      contentTable.innerHTML = '';
+      
+      if (contentsArray.length === 0) {
+        noContentMessage.style.display = 'flex';
+        return;
+      }
+      
+      noContentMessage.style.display = 'none';
+      
+      contentsArray.forEach(content => {
+        const row = document.createElement('tr');
+        
+        row.innerHTML = `
+          <td>${content.title}</td>
+          <td>${content.type || 'خبر'}</td>
+          <td>${new Date(content.created_at).toLocaleDateString('ar-EG')}</td>
+          <td><span class="status-${content.status === 'منشور' ? 'published' : 'draft'}">${content.status}</span></td>
+          <td>
+            <button class="action-btn edit-btn" data-id="${content.id}">
+              <i class="fas fa-edit"></i> تعديل
+            </button>
+            <button class="action-btn delete-btn" data-id="${content.id}">
+              <i class="fas fa-trash"></i> حذف
+            </button>
+          </td>
+        `;
+        
+        contentTable.appendChild(row);
+      });
+      
+      // إضافة معالجات الأحداث لأزرار التعديل والحذف
+      document.querySelectorAll('.edit-btn').forEach(btn => {
+        btn.addEventListener('click', () => editContent(btn.dataset.id));
+      });
+      
+      document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', () => deleteContent(btn.dataset.id));
+      });
+    }
+    
+    // فتح نموذج إضافة محتوى
+    addContentBtn.addEventListener('click', () => {
+      contentForm.reset();
+      document.getElementById('contentId').value = '';
+      modalTitle.textContent = 'إضافة خبر جديد';
+      formMessage.style.display = 'none';
+      imagePreview.style.display = 'none';
+      contentModal.style.display = 'flex';
+    });
+    
+    // معاينة الصورة عند تغيير الرابط
+    imageUrlInput.addEventListener('input', () => {
+      if (imageUrlInput.value) {
+        imagePreview.src = imageUrlInput.value;
+        imagePreview.style.display = 'block';
+      } else {
+        imagePreview.style.display = 'none';
+      }
+    });
+    
+    // إغلاق النموذج
+    closeModalBtn.addEventListener('click', () => {
+      contentModal.style.display = 'none';
+    });
+    
+    // عند النقر خارج النموذج لإغلاقه
+    window.addEventListener('click', (e) => {
+      if (e.target === contentModal) {
+        contentModal.style.display = 'none';
+      }
+    });
+    
+    // معالجة إرسال النموذج
+    contentForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      const contentId = document.getElementById('contentId').value;
+      const title = document.getElementById('title').value;
+      const type = document.getElementById('type').value;
+      const content = document.getElementById('content').value;
+      const imageUrl = document.getElementById('imageUrl').value;
+      const status = document.getElementById('status').value;
+      
+      // التحقق من صحة البيانات
+      if (!title || !type || !content || !status) {
+        showFormMessage('يرجى ملء جميع الحقول المطلوبة', 'error');
+        return;
+      }
+      
+      const newsData = {
+        title,
+        content,
+        image_url: imageUrl,
+        status
+      };
+      
+      if (contentId) {
+        // تعديل المحتوى الموجود
+        fetch(`https://yemen-chat-version-8.onrender.com/news/${contentId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newsData)
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            showFormMessage('تم تحديث المحتوى بنجاح', 'success');
+            loadContents();
+            setTimeout(() => contentModal.style.display = 'none', 1500);
+          } else {
+            showFormMessage('حدث خطأ أثناء التحديث', 'error');
+          }
+        });
+      } else {
+        // إضافة محتوى جديد
+        fetch("https://yemen-chat-version-8.onrender.com/news", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newsData)
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            showFormMessage('تم إضافة المحتوى بنجاح', 'success');
+            loadContents();
+            setTimeout(() => contentModal.style.display = 'none', 1500);
+          } else {
+            showFormMessage(data.error || 'حدث خطأ أثناء الإضافة', 'error');
+          }
+        });
+      }
+    });
+    
+    // تعديل المحتوى
+    function editContent(id) {
+      const content = contents.find(item => item.id == id);
+      if (content) {
+        document.getElementById('contentId').value = content.id;
+        document.getElementById('title').value = content.title;
+        document.getElementById('type').value = 'خبر'; // يمكن تعديل هذا إذا كان لديك أنواع متعددة
+        document.getElementById('content').value = content.content;
+        document.getElementById('imageUrl').value = content.image_url || '';
+        document.getElementById('status').value = content.status;
+        
+        if (content.image_url) {
+          imagePreview.src = content.image_url;
+          imagePreview.style.display = 'block';
+        }
+        
+        modalTitle.textContent = 'تعديل المحتوى';
+        formMessage.style.display = 'none';
+        contentModal.style.display = 'flex';
+      }
+    }
+    
+    // حذف المحتوى
+    function deleteContent(id) {
+      if (confirm('هل أنت متأكد من رغبتك في حذف هذا المحتوى؟')) {
+        fetch(`https://yemen-chat-version-8.onrender.com/news/${id}`, {
+          method: "DELETE"
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            loadContents();
+          } else {
+            alert("فشل في حذف المحتوى.");
+          }
+        });
+      }
+    }
+    
+    // عرض رسالة في النموذج
+    function showFormMessage(message, type) {
+      formMessage.textContent = message;
+      formMessage.className = `message ${type}`;
+      formMessage.style.display = 'flex';
+      
+      setTimeout(() => {
+        formMessage.style.display = 'none';
+      }, 3000);
+    }
+    
+    // فلترة المحتوى
+    function filterContents() {
+      const searchTerm = searchInput.value.toLowerCase();
+      const selectedType = typeFilter.value;
+      const selectedStatus = statusFilter.value;
+      
+      const filtered = contents.filter(content => {
+        const matchesSearch = content.title.toLowerCase().includes(searchTerm);
+        const matchesType = selectedType === 'all' || content.type === selectedType;
+        const matchesStatus = selectedStatus === 'all' || content.status === selectedStatus;
+        
+        return matchesSearch && matchesType && matchesStatus;
+      });
+      
+      renderContents(filtered);
+    }
+    
+    // إضافة معالجات الأحداث للفلاتر
+    searchInput.addEventListener('input', filterContents);
+    typeFilter.addEventListener('change', filterContents);
+    statusFilter.addEventListener('change', filterContents);
+    
+    // تسجيل الخروج
+    logoutBtn.addEventListener('click', () => {
+      localStorage.removeItem('is_admin');
+      localStorage.removeItem('user_id');
+      alert('تم تسجيل الخروج بنجاح');
+      window.location.href = 'login.html';
+    });
   </script>
 </body>
 </html>

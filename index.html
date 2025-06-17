@@ -6,8 +6,32 @@
   <title>مساعد الذكاء الاصطناعي المتطور</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="style.css" />
-  <!-- إضافة مكتبة الايموجي الجديدة -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/emoji-picker-element@1.15.1/dist/style.css" />
+  <style>
+    /* إضافة قسم الأخبار */
+    .news-section {
+      padding: 20px;
+      margin-top: 30px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+    }
+    
+    .news-item {
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .news-item img {
+      width: 100%;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+    
+    /* زر العودة */
+
+  </style>
 </head>
 <body>
   <div id="app">
@@ -31,6 +55,9 @@
         </button>
         <button class="header-btn" title="إعدادات" onclick="openSettings()">
           <i class="fas fa-cog"></i>
+        </button>
+        <button class="header-btn" title="العودة للرئيسية" onclick="goToHome()">
+          <i class="fas fa-home"></i>
         </button>
       </div>
     </header>
@@ -72,6 +99,12 @@
             <p>إجابات دقيقة على أسئلتك المعقدة</p>
           </div>
         </div>
+      </div>
+      
+      <!-- قسم الأخبار -->
+      <div class="news-section">
+        <h2>آخر الأخبار</h2>
+        <div id="news-container"></div>
       </div>
     </main>
 
@@ -122,7 +155,7 @@
             <button class="btn btn-secondary" onclick="showProfileSettings()">الملف الشخصي</button>
             <button class="btn btn-secondary" onclick="showApiSettings()">تغيير الـ API</button>
           </div>
-          <div id="profile-settings" style="display:none;">
+          <div id="profile-settings">
             <div style="text-align:center; margin-bottom: 20px;">
               <div onclick="promptForImage()" style="width:100px;height:100px;border-radius:50%;background:#eee;overflow:hidden;margin:auto;position:relative;cursor:pointer">
                 <img id="profile-image" src="" style="width:100%;height:100%;object-fit:cover;display:none">
@@ -156,23 +189,61 @@
       </div>
     </div>
 
-    <!-- حاوية الايموجي الجديدة -->
     <div id="emoji-container">
       <emoji-picker id="emoji-picker"></emoji-picker>
     </div>
+    
+    <div class="home-btn" onclick="goToHome()">
+      <i class="fas fa-home"></i>
+    </div>
   </div>
 
-  <!-- مكتبات خارجية -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/javascript.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/python.min.js"></script>
-  
-  <!-- مكتبة الايموجي -->
   <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
-
-  <script>hljs.highlightAll();</script>
-  <!-- سكريبت خاص -->
   <script src="script.js"></script>
+  <script>
+    // تحميل الأخبار عند بدء التشغيل
+    document.addEventListener('DOMContentLoaded', () => {
+      loadNews();
+      
+      // التحقق من تسجيل الدخول
+      const userId = localStorage.getItem('user_id');
+      if (!userId) {
+        window.location.href = 'login.html';
+      }
+    });
+    
+    // دالة لتحميل الأخبار
+    function loadNews() {
+      fetch("https://yemen-chat-version-8.onrender.com/news")
+        .then(res => res.json())
+        .then(news => {
+          const container = document.getElementById('news-container');
+          container.innerHTML = '';
+          
+          news.forEach(item => {
+            const newsItem = document.createElement('div');
+            newsItem.className = 'news-item';
+            
+            let imageHtml = '';
+            if (item.image_url) {
+              imageHtml = `<img src="${item.image_url}" alt="${item.title}">`;
+            }
+            
+            newsItem.innerHTML = `
+              ${imageHtml}
+              <h3>${item.title}</h3>
+              <p>${item.content.substring(0, 100)}...</p>
+              <span>${new Date(item.created_at).toLocaleDateString('ar-EG')}</span>
+            `;
+            container.appendChild(newsItem);
+          });
+        });
+    }
+    
+    function goToHome() {
+      window.location.href = 'index.html';
+    }
+  </script>
 </body>
 </html>
