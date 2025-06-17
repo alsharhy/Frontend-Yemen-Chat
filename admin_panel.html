@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>لوحة تحكم المشرف</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      font-family: 'Tajawal', sans-serif;
+    }
+    
+    body {
+      background-color: #f0f5ff;
+      padding: 20px;
+      margin: 0;
+    }
+    
+    .admin-header {
+      background: linear-gradient(to right, #2c3e50, #4a6491);
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .admin-header h1 {
+      margin: 0;
+      padding: 10px;
+    }
+    
+    .admin-header p {
+      margin: 0;
+      opacity: 0.9;
+    }
+    
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 25px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      transition: transform 0.3s;
+      cursor: pointer;
+      text-align: center;
+      border-top: 4px solid;
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    }
+    
+    .card h3 {
+      color: #2c3e50;
+      margin-top: 15px;
+      margin-bottom: 10px;
+    }
+    
+    .card p {
+      color: #555;
+      font-size: 14px;
+    }
+    
+    .icon {
+      font-size: 48px;
+      margin-bottom: 15px;
+    }
+    
+    .user-card {
+      border-top-color: #3498db;
+    }
+    .user-card .icon {
+      color: #3498db;
+    }
+    
+    .settings-card {
+      border-top-color: #e74c3c;
+    }
+    .settings-card .icon {
+      color: #e74c3c;
+    }
+    
+    .stats-card {
+      border-top-color: #2ecc71;
+    }
+    .stats-card .icon {
+      color: #2ecc71;
+    }
+    
+    .content-card {
+      border-top-color: #9b59b6;
+    }
+    .content-card .icon {
+      color: #9b59b6;
+    }
+    
+    .logout-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: #e74c3c;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <button class="logout-btn" onclick="logout()">تسجيل الخروج <i class="fas fa-sign-out-alt"></i></button>
+  
+  <div class="admin-header">
+    <h1>لوحة تحكم المشرف</h1>
+    <p>مرحباً بك في لوحة التحكم، يمكنك إدارة جميع جوانب الموقع من هنا</p>
+  </div>
+  
+  <div class="dashboard">
+    <div class="card user-card" onclick="window.location.href='users.html'">
+      <div class="icon"><i class="fas fa-users"></i></div>
+      <h3>إدارة المستخدمين</h3>
+      <p>عرض وتعديل وحذف حسابات المستخدمين</p>
+    </div>
+    
+    <div class="card settings-card" onclick="window.location.href='site_settings.html'">
+      <div class="icon"><i class="fas fa-cog"></i></div>
+      <h3>إعدادات الموقع</h3>
+      <p>تغيير إعدادات الموقع العامة والتصميم</p>
+    </div>
+    
+    <div class="card stats-card" onclick="window.location.href='analytics.html'">
+      <div class="icon"><i class="fas fa-chart-bar"></i></div>
+      <h3>إحصائيات الموقع</h3>
+      <p>عرض إحصائيات استخدام الموقع والتحليلات</p>
+    </div>
+    
+    <div class="card content-card" onclick="window.location.href='content_management.html'">
+      <div class="icon"><i class="fas fa-file-alt"></i></div>
+      <h3>إدارة المحتوى</h3>
+      <p>إدارة المقالات والصفحات والمحتوى المنشور</p>
+    </div>
+  </div>
+
+  <script>
+    // التحقق من صلاحيات المشرف
+    if(localStorage.getItem('is_admin') !== 'true') {
+      alert('ليس لديك صلاحية الوصول إلى هذه الصفحة');
+      window.location.href = 'login.html';
+    }
+    
+    function logout() {
+      localStorage.removeItem('is_admin');
+      localStorage.removeItem('user_id');
+      window.location.href = 'login.html';
+    }
+  </script>
+</body>
+</html>

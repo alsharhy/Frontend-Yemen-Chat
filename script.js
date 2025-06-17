@@ -89,6 +89,18 @@ document.addEventListener("DOMContentLoaded", () => {
       emojiContainer.style.display = "none";
     }
   });
+  
+  // إظهار زر لوحة التحكم للإدمن فقط
+  const isAdmin = localStorage.getItem('is_admin') === 'true';
+  if(isAdmin) {
+    const adminBtn = document.getElementById('adminPanelBtn');
+    if (adminBtn) {
+      adminBtn.style.display = 'block';
+      adminBtn.addEventListener('click', () => {
+        window.location.href = 'admin_panel.html';
+      });
+    }
+  }
 });
 
 // باقي الكود كما هو بدون تغيير

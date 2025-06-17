@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <title>قائمة المستخدمين</title>
  <link href="https://fonts.googleapis.com/css2?family=Tajawal&display=swap" rel="stylesheet">
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     body {
       font-family: 'Tajawal', sans-serif;
@@ -71,6 +72,15 @@ tr:nth-child(even) {
     .delete-btn:hover {
       background-color: #c82333;
     }
+    
+    .admin-btn {
+      background-color: #6f42c1;
+      color: white;
+    }
+    
+    .admin-btn:hover {
+      background-color: #563d7c;
+    }
 
     .status {
       font-weight: bold;
@@ -105,6 +115,7 @@ tr:nth-child(even) {
         <th>البريد الإلكتروني</th>
         <th>آخر دخول</th>
         <th>الحالة</th>
+        <th>مشرف؟</th>
         <th>الإجراءات</th>
       </tr>
     </thead>
@@ -140,9 +151,11 @@ tr:nth-child(even) {
             <td>${user.email}</td>
             <td>${user.last_login || ""}</td>
             <td>${getStatus(user)}</td>
+            <td>${user.is_admin ? 'نعم' : 'لا'}</td>
             <td>
               <div class="edit">
                 <button class="edit-btn" onclick="editUser(${user.id})">تعديل</button>
+                <button class="admin-btn" onclick="toggleAdmin(${user.id}, this)">${user.is_admin ? 'إزالة الإدمن' : 'ترقية للإدمن'}</button>
                 <button class="delete-btn" onclick="deleteUser(${user.id})">حذف</button>
               </div>
             </td>
@@ -154,6 +167,24 @@ tr:nth-child(even) {
 
   function editUser(id) {
     window.location.href = `edit_user.html?id=${id}`;
+  }
+  
+  function toggleAdmin(id, button) {
+    fetch(`https://yemen-chat-version-8.onrender.com/users/${id}/admin`, {
+      method: "POST"
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          alert(data.message);
+          button.textContent = data.is_admin ? 'إزالة الإدمن' : 'ترقية للإدمن';
+          // تحديث الخلية التي تظهر حالة المشرف
+          const row = button.closest('tr');
+          row.cells[5].textContent = data.is_admin ? 'نعم' : 'لا';
+        } else {
+          alert("فشلت العملية");
+        }
+      });
   }
 
   function deleteUser(id) {
@@ -171,6 +202,12 @@ tr:nth-child(even) {
           }
         });
     }
+  }
+
+  // حماية الصفحة: فقط المشرف يمكنه الوصول
+  if (localStorage.getItem('is_admin') !== 'true') {
+    alert('ليس لديك صلاحية الوصول إلى هذه الصفحة');
+    window.location.href = 'index.html';
   }
 
   window.onload = loadUsers;

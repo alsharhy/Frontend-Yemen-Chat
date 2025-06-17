@@ -99,6 +99,12 @@
   </form>
 
 <script>
+  // حماية الصفحة: فقط المشرف يمكنه الوصول
+  if (localStorage.getItem('is_admin') !== 'true') {
+    alert('ليس لديك صلاحية الوصول إلى هذه الصفحة');
+    window.location.href = 'index.html';
+  }
+
   const params = new URLSearchParams(window.location.search);
   const userId = params.get("id");
 

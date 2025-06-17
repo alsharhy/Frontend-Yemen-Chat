@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>إحصائيات الموقع</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      font-family: 'Tajawal', sans-serif;
+    }
+    
+    body {
+      background-color: #f0f5ff;
+      padding: 20px;
+      margin: 0;
+    }
+    
+    .admin-header {
+      background: linear-gradient(to right, #2c3e50, #4a6491);
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .admin-header h1 {
+      margin: 0;
+      padding: 10px;
+    }
+    
+    .stats-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    
+    .stat-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    
+    .stat-card h3 {
+      color: #2c3e50;
+      margin-bottom: 15px;
+    }
+    
+    .stat-value {
+      font-size: 36px;
+      font-weight: bold;
+      color: #3498db;
+      margin: 10px 0;
+    }
+    
+    .stat-label {
+      color: #7f8c8d;
+    }
+    
+    .chart-container {
+      grid-column: 1 / -1;
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .chart-placeholder {
+      height: 400px;
+      background: #f9f9f9;
+      border: 1px dashed #ddd;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #95a5a6;
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-header">
+    <h1>إحصائيات الموقع</h1>
+    <p>عرض إحصائيات استخدام الموقع والتحليلات</p>
+  </div>
+  
+  <div class="stats-container">
+    <div class="stat-card">
+      <h3>المستخدمون المسجلون</h3>
+      <div class="stat-value">1,245</div>
+      <div class="stat-label">مستخدم</div>
+    </div>
+    
+    <div class="stat-card">
+      <h3>المحادثات اليومية</h3>
+      <div class="stat-value">3,892</div>
+      <div class="stat-label">محادثة</div>
+    </div>
+    
+    <div class="stat-card">
+      <h3>الاستخدام الشهري</h3>
+      <div class="stat-value">98%</div>
+      <div class="stat-label">نشاط</div>
+    </div>
+    
+    <div class="stat-card">
+      <h3>الوقت المتوسط</h3>
+      <div class="stat-value">7.2</div>
+      <div class="stat-label">دقيقة/جلسة</div>
+    </div>
+    
+    <div class="chart-container">
+      <h3>نشاط المستخدمين خلال الأسبوع</h3>
+      <div class="chart-placeholder">
+        <i class="fas fa-chart-bar" style="font-size: 48px; opacity: 0.3;"></i>
+        <p style="margin-right: 15px;">رسم بياني يظهر هنا</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // التحقق من صلاحيات المشرف
+    if(localStorage.getItem('is_admin') !== 'true') {
+      alert('ليس لديك صلاحية الوصول إلى هذه الصفحة');
+      window.location.href = 'login.html';
+    }
+  </script>
+</body>
+</html>

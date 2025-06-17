@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>إعدادات الموقع</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      font-family: 'Tajawal', sans-serif;
+    }
+    
+    body {
+      background-color: #f0f5ff;
+      padding: 20px;
+      margin: 0;
+    }
+    
+    .admin-header {
+      background: linear-gradient(to right, #2c3e50, #4a6491);
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .admin-header h1 {
+      margin: 0;
+      padding: 10px;
+    }
+    
+    .settings-container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #2c3e50;
+    }
+    
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+    
+    .form-group textarea {
+      height: 150px;
+    }
+    
+    .btn {
+      padding: 12px 25px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    
+    .btn-save {
+      background: #3498db;
+      color: white;
+    }
+    
+    .btn-save:hover {
+      background: #2980b9;
+    }
+    
+    .btn-back {
+      background: #95a5a6;
+      color: white;
+      margin-left: 10px;
+    }
+    
+    .btn-back:hover {
+      background: #7f8c8d;
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-header">
+    <h1>إعدادات الموقع</h1>
+    <p>قم بتعديل إعدادات الموقع العامة</p>
+  </div>
+  
+  <div class="settings-container">
+    <div class="form-group">
+      <label>اسم الموقع:</label>
+      <input type="text" value="مساعد الذكاء الاصطناعي">
+    </div>
+    
+    <div class="form-group">
+      <label>وصف الموقع:</label>
+      <textarea>موقع متطور للذكاء الاصطناعي يساعدك في العديد من المهام اليومية والبرمجية</textarea>
+    </div>
+    
+    <div class="form-group">
+      <label>لون السمة الرئيسي:</label>
+      <input type="color" value="#128c7e">
+    </div>
+    
+    <div class="form-group">
+      <label>حالة الموقع:</label>
+      <select>
+        <option>مفتوح للجميع</option>
+        <option>مفتوح للمسجلين فقط</option>
+        <option>مغلق للصيانة</option>
+      </select>
+    </div>
+    
+    <div class="form-group">
+      <button class="btn btn-save">حفظ التعديلات</button>
+      <button class="btn btn-back" onclick="window.location.href='admin_panel.html'">العودة</button>
+    </div>
+  </div>
+
+  <script>
+    // التحقق من صلاحيات المشرف
+    if(localStorage.getItem('is_admin') !== 'true') {
+      alert('ليس لديك صلاحية الوصول إلى هذه الصفحة');
+      window.location.href = 'login.html';
+    }
+  </script>
+</body>
+</html>
