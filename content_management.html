@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>إدارة المحتوى</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      font-family: 'Tajawal', sans-serif;
+    }
+    
+    body {
+      background-color: #f0f5ff;
+      padding: 20px;
+      margin: 0;
+    }
+    
+    .admin-header {
+      background: linear-gradient(to right, #2c3e50, #4a6491);
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .admin-header h1 {
+      margin: 0;
+      padding: 10px;
+    }
+    
+    .content-actions {
+      max-width: 1200px;
+      margin: 0 auto 30px;
+      display: flex;
+      justify-content: flex-end;
+    }
+    
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .btn-add {
+      background: #2ecc71;
+      color: white;
+    }
+    
+    .btn-add:hover {
+      background: #27ae60;
+    }
+    
+    .content-list {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    th, td {
+      padding: 15px;
+      text-align: right;
+      border-bottom: 1px solid #eee;
+    }
+    
+    th {
+      background: #f8f9fa;
+      color: #2c3e50;
+      font-weight: bold;
+    }
+    
+    tr:hover {
+      background: #f5f7fa;
+    }
+    
+    .action-btn {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    
+    .edit-btn {
+      background: #3498db;
+      color: white;
+    }
+    
+    .delete-btn {
+      background: #e74c3c;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-header">
+    <h1>إدارة المحتوى</h1>
+    <p>إدارة المقالات والصفحات والمحتوى المنشور</p>
+  </div>
+  
+  <div class="content-actions">
+    <button class="btn btn-add">
+      <i class="fas fa-plus"></i> إضافة محتوى جديد
+    </button>
+  </div>
+  
+  <div class="content-list">
+    <table>
+      <thead>
+        <tr>
+          <th>العنوان</th>
+          <th>النوع</th>
+          <th>تاريخ النشر</th>
+          <th>الحالة</th>
+          <th>الإجراءات</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>دليل استخدام المساعد الذكي</td>
+          <td>مقالة</td>
+          <td>2023-10-15</td>
+          <td>منشور</td>
+          <td>
+            <button class="action-btn edit-btn">تعديل</button>
+            <button class="action-btn delete-btn">حذف</button>
+          </td>
+        </tr>
+        <tr>
+          <td>كيفية كتابة الأكواد بمساعدة الذكاء الاصطناعي</td>
+          <td>مقالة</td>
+          <td>2023-10-10</td>
+          <td>مسودة</td>
+          <td>
+            <button class="action-btn edit-btn">تعديل</button>
+            <button class="action-btn delete-btn">حذف</button>
+          </td>
+        </tr>
+        <tr>
+          <td>الصفحة الرئيسية</td>
+          <td>صفحة</td>
+          <td>2023-09-28</td>
+          <td>منشور</td>
+          <td>
+            <button class="action-btn edit-btn">تعديل</button>
+            <button class="action-btn delete-btn">حذف</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    // التحقق من صلاحيات المشرف
+    if(localStorage.getItem('is_admin') !== 'true') {
+      alert('ليس لديك صلاحية الوصول إلى هذه الصفحة');
+      window.location.href = 'login.html';
+    }
+  </script>
+</body>
+</html>
