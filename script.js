@@ -392,3 +392,4 @@ function checkAPIStatus() {
     })
     .catch(error => console.error("فشل الاتصال بـ OpenRouter:", error));
 }
+

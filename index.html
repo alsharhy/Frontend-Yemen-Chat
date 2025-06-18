@@ -214,36 +214,65 @@
     });
     
     // دالة لتحميل الأخبار
-    function loadNews() {
-      fetch("https://yemen-chat-version-8.onrender.com/news")
-        .then(res => res.json())
-        .then(news => {
-          const container = document.getElementById('news-container');
-          container.innerHTML = '';
+    // دالة لتحميل الأخبار
+function loadNews() {
+  fetch("https://yemen-chat-version-8.onrender.com/news")
+    .then(res => res.json())
+    .then(news => {
+      const container = document.getElementById('news-container');
+      container.innerHTML = '';
+      
+      news.forEach(item => {
+        const newsItem = document.createElement('div');
+        newsItem.className = 'news-item';
+        
+        let imageHtml = '';
+        if (item.image_url) {
+          imageHtml = `<img src="${item.image_url}" alt="${item.title}">`;
+        }
+        
+        // محتوى مختصر (4 أسطر)
+        const shortContent = item.content.substring(0, 100) + (item.content.length > 100 ? '...' : '');
+        
+        newsItem.innerHTML = `
+          ${imageHtml}
+          <h3>${item.title}</h3>
+          <div class="news-content">
+            <p class="short-content">${shortContent}</p>
+            <p class="full-content" style="display: none;">${item.content}</p>
+          </div>
+          <span>${new Date(item.created_at).toLocaleDateString('ar-EG')}</span>
+          <button class="read-more-btn">عرض المزيد</button>
+        `;
+        container.appendChild(newsItem);
+      });
+      
+      // إضافة معالجات الأحداث لأزرار "عرض المزيد"
+      document.querySelectorAll('.read-more-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const newsItem = this.closest('.news-item');
+          const shortContent = newsItem.querySelector('.short-content');
+          const fullContent = newsItem.querySelector('.full-content');
+          const btnText = this.textContent;
           
-          news.forEach(item => {
-            const newsItem = document.createElement('div');
-            newsItem.className = 'news-item';
-            
-            let imageHtml = '';
-            if (item.image_url) {
-              imageHtml = `<img src="${item.image_url}" alt="${item.title}">`;
-            }
-            
-            newsItem.innerHTML = `
-              ${imageHtml}
-              <h3>${item.title}</h3>
-              <p>${item.content.substring(0, 100)}...</p>
-              <span>${new Date(item.created_at).toLocaleDateString('ar-EG')}</span>
-            `;
-            container.appendChild(newsItem);
-          });
+          if (btnText === 'عرض المزيد') {
+            shortContent.style.display = 'none';
+            fullContent.style.display = 'block';
+            this.textContent = 'إغلاق';
+          } else {
+            shortContent.style.display = 'block';
+            fullContent.style.display = 'none';
+            this.textContent = 'عرض المزيد';
+          }
         });
-    }
-    
+      });
+    });
+}
     function goToHome() {
       window.location.href = 'index.html';
     }
+    
+    
   </script>
 </body>
 </html>

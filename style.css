@@ -718,3 +718,135 @@ emoji-picker {
     height: 350px;
   }
 }
+
+
+/* إضافة في نهاية الملف */
+@media (max-width: 768px) {
+  /* تعديلات للشاشات الصغيرة */
+  header {
+    padding: 0 10px;
+  }
+  
+  .app-title h1 {
+    font-size: 1.1rem;
+  }
+  
+  .app-title p {
+    font-size: 0.7rem;
+  }
+  
+  .header-btn {
+    width: 35px;
+    height: 35px;
+  }
+  
+  .welcome-message h2 {
+    font-size: 1.5rem;
+  }
+  
+  .features {
+    grid-template-columns: 1fr;
+  }
+  
+  .feature {
+    padding: 15px;
+  }
+  
+  .news-section {
+    padding: 15px;
+  }
+  
+  .news-item h3 {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  /* تعديلات للهواتف */
+  header {
+    height: 70px;
+  }
+  
+  .logo {
+    width: 30px;
+    height: 30px;
+    font-size: 16px;
+  }
+  
+  .app-title h1 {
+    font-size: 0.9rem;
+  }
+  
+  .app-title p {
+    display: none;
+  }
+  
+  .header-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 16px;
+  }
+  
+  .welcome-message {
+    padding: 15px;
+  }
+  
+  .welcome-message h2 {
+    font-size: 1.3rem;
+  }
+  
+  .welcome-message p {
+    font-size: 0.9rem;
+  }
+}
+
+
+/* في نهاية ملف style.css */
+.news-item {
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border-color);
+  position: relative;
+}
+
+.news-item img {
+  width: 100%;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  max-height: 200px;
+  object-fit: cover;
+}
+
+.news-item h3 {
+  margin-bottom: 8px;
+  color: var(--primary-dark);
+}
+
+.news-item p {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 8px;
+}
+
+.news-item span {
+  font-size: 0.85rem;
+  color: #777;
+  display: block;
+  margin-top: 5px;
+}
+
+.read-more-btn {
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  margin-top: 10px;
+  transition: background 0.3s;
+}
+
+.read-more-btn:hover {
+  background: var(--primary-dark);
+}
