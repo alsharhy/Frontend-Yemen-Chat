@@ -6,8 +6,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Tajawal&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    /* ... (النمط السابق) ... */
-        * {
+    * {
       font-family: 'Tajawal', sans-serif;
     }
     
@@ -84,6 +83,13 @@
       color: #3498db;
     }
     
+    .support-card {
+      border-top-color: #ff9800;
+    }
+    .support-card .icon {
+      color: #ff9800;
+    }
+    
     .settings-card {
       border-top-color: #e74c3c;
     }
@@ -105,11 +111,11 @@
       color: #9b59b6;
     }
     
-    .logout-btn {
+    .back-btn {
       position: absolute;
       top: 20px;
       left: 20px;
-      background: #e74c3c;
+      background: #3498db;
       color: white;
       border: none;
       padding: 10px 20px;
@@ -120,7 +126,9 @@
   </style>
 </head>
 <body>
-  <button class="logout-btn" onclick="logout()">تسجيل الخروج <i class="fas fa-sign-out-alt"></i></button>
+  <button class="back-btn" onclick="window.location.href='index.html'">
+    <i class="fas fa-arrow-left"></i> العودة للرئيسية
+  </button>
   
   <div class="admin-header">
     <h1>لوحة تحكم المشرف</h1>
@@ -132,6 +140,12 @@
       <div class="icon"><i class="fas fa-users"></i></div>
       <h3>إدارة المستخدمين</h3>
       <p>عرض وتعديل وحذف حسابات المستخدمين</p>
+    </div>
+    
+    <div class="card support-card" onclick="window.location.href='admin_support.html'">
+      <div class="icon"><i class="fas fa-headset"></i></div>
+      <h3>الدعم الفني</h3>
+      <p>إدارة محادثات الدعم الفني مع المستخدمين</p>
     </div>
     
     <div class="card settings-card" onclick="window.location.href='site_settings.html'">
@@ -157,12 +171,6 @@
     // التحقق من صلاحيات المشرف
     if(localStorage.getItem('is_admin') !== 'true') {
       alert('ليس لديك صلاحية الوصول إلى هذه الصفحة');
-      window.location.href = 'login.html';
-    }
-    
-    function logout() {
-      localStorage.removeItem('is_admin');
-      localStorage.removeItem('user_id');
       window.location.href = 'login.html';
     }
   </script>

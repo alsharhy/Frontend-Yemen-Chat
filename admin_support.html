@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>إدارة محادثات الدعم الفني</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      font-family: 'Tajawal', sans-serif;
+    }
+    
+    body {
+      background-color: #f0f5ff;
+      padding: 20px;
+      margin: 0;
+    }
+    
+    .admin-header {
+      background: linear-gradient(to right, #2c3e50, #4a6491);
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .support-chats {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    
+    .chat-item {
+      display: flex;
+      padding: 15px;
+      border-bottom: 1px solid #eee;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    
+    .chat-item:hover {
+      background: #f5f5f5;
+    }
+    
+    .chat-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-left: 15px;
+    }
+    
+    .chat-info {
+      flex: 1;
+    }
+    
+    .chat-name {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    
+    .chat-meta {
+      color: #777;
+      font-size: 0.9rem;
+    }
+    
+    .chat-status {
+      padding: 5px 10px;
+      border-radius: 15px;
+      font-size: 0.8rem;
+    }
+    
+    .status-open {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+    
+    .status-closed {
+      background: #ffebee;
+      color: #c62828;
+    }
+    
+    .back-btn {
+      background: #95a5a6;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-header">
+    <h1>إدارة محادثات الدعم الفني</h1>
+    <p>عرض جميع محادثات المستخدمين مع الدعم الفني</p>
+  </div>
+  
+  <div class="support-chats" id="support-chats">
+    <!-- محادثات الدعم ستظهر هنا -->
+  </div>
+  
+  <button class="back-btn" onclick="window.location.href='admin_panel.html'">
+    <i class="fas fa-arrow-left"></i> العودة للوحة التحكم
+  </button>
+
+  <script>
+    // جلب محادثات الدعم
+    fetch("https://yemen-chat-version-8.onrender.com/support-chats")
+      .then(res => res.json())
+      .then(chats => {
+        const container = document.getElementById('support-chats');
+        
+        chats.forEach(chat => {
+          const chatItem = document.createElement('div');
+          chatItem.className = 'chat-item';
+          chatItem.onclick = () => {
+            window.location.href = `support_chat.html?chat_id=${chat.id}&admin=true`;
+          };
+          
+          chatItem.innerHTML = `
+            <img src="${chat.profile_image || 'default-avatar.jpg'}" class="chat-avatar">
+            <div class="chat-info">
+              <div class="chat-name">${chat.fullname} (${chat.username})</div>
+              <div class="chat-meta">
+                ${new Date(chat.created_at).toLocaleString('ar-EG')}
+              </div>
+            </div>
+            <div class="chat-status status-${chat.status}">
+              ${chat.status === 'open' ? 'مفتوحة' : 'مغلقة'}
+            </div>
+          `;
+          
+          container.appendChild(chatItem);
+        });
+      });
+  </script>
+</body>
+</html>

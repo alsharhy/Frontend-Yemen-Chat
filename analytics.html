@@ -6,8 +6,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Tajawal&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    /* ... (النمط السابق) ... */
-        * {
+    * {
       font-family: 'Tajawal', sans-serif;
     }
     
@@ -46,6 +45,12 @@
       padding: 20px;
       box-shadow: 0 4px 8px rgba(0,0,0,0.1);
       text-align: center;
+      transition: transform 0.3s;
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
     }
     
     .stat-card h3 {
@@ -82,6 +87,18 @@
       justify-content: center;
       color: #95a5a6;
     }
+    
+    .back-btn {
+      background: #95a5a6;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 20px;
+      display: block;
+      margin: 30px auto;
+    }
   </style>
 </head>
 <body>
@@ -92,44 +109,106 @@
   
   <div class="stats-container">
     <div class="stat-card">
-      <h3>المستخدمون المسجلون</h3>
-      <div class="stat-value">1,245</div>
-      <div class="stat-label">مستخدم</div>
+      <h3>عدد المستخدمين</h3>
+      <div class="stat-value" id="users-count">0</div>
+      <div class="stat-label">مستخدم مسجل</div>
+    </div>
+    
+    <div class="stat-card">
+      <h3>عدد الأخبار</h3>
+      <div class="stat-value" id="news-count">0</div>
+      <div class="stat-label">خبر منشور</div>
+    </div>
+    
+    <div class="stat-card">
+      <h3>أنواع الأخبار</h3>
+      <div class="stat-value" id="news-types">0</div>
+      <div class="stat-label">نوع مختلف</div>
     </div>
     
     <div class="stat-card">
       <h3>المحادثات اليومية</h3>
-      <div class="stat-value">3,892</div>
+      <div class="stat-value" id="daily-chats">0</div>
       <div class="stat-label">محادثة</div>
     </div>
     
-    <div class="stat-card">
-      <h3>الاستخدام الشهري</h3>
-      <div class="stat-value">98%</div>
-      <div class="stat-label">نشاط</div>
-    </div>
-    
-    <div class="stat-card">
-      <h3>الوقت المتوسط</h3>
-      <div class="stat-value">7.2</div>
-      <div class="stat-label">دقيقة/جلسة</div>
+    <div class="chart-container">
+      <h3>توزيع أنواع الأخبار</h3>
+      <div class="chart-placeholder">
+        <canvas id="news-chart" height="400"></canvas>
+      </div>
     </div>
     
     <div class="chart-container">
-      <h3>نشاط المستخدمين خلال الأسبوع</h3>
+      <h3>نشاط المستخدمين</h3>
       <div class="chart-placeholder">
-        <i class="fas fa-chart-bar" style="font-size: 48px; opacity: 0.3;"></i>
-        <p style="margin-right: 15px;">رسم بياني يظهر هنا</p>
+        <canvas id="activity-chart" height="400"></canvas>
       </div>
     </div>
   </div>
 
+  <button class="back-btn" onclick="window.location.href='admin_panel.html'">
+    <i class="fas fa-arrow-left"></i> العودة للوحة التحكم
+  </button>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
     // التحقق من صلاحيات المشرف
     if(localStorage.getItem('is_admin') !== 'true') {
       alert('ليس لديك صلاحية الوصول إلى هذه الصفحة');
       window.location.href = 'login.html';
     }
+    
+    // جلب الإحصائيات من الخادم
+    fetch("https://yemen-chat-version-8.onrender.com/statistics")
+      .then(res => res.json())
+      .then(data => {
+        // عرض الإحصائيات الأساسية
+        document.getElementById('users-count').textContent = data.users_count;
+        document.getElementById('news-count').textContent = data.news_count;
+        document.getElementById('news-types').textContent = data.news_types;
+        document.getElementById('daily-chats').textContent = data.daily_chats;
+        
+        // إنشاء مخطط توزيع أنواع الأخبار
+        const newsCtx = document.getElementById('news-chart').getContext('2d');
+        new Chart(newsCtx, {
+          type: 'pie',
+          data: {
+            labels: data.news_distribution.labels,
+            datasets: [{
+              data: data.news_distribution.values,
+              backgroundColor: ['#3498db', '#2ecc71', '#9b59b6', '#e74c3c', '#f39c12']
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false
+          }
+        });
+        
+        // إنشاء مخطط نشاط المستخدمين
+        const activityCtx = document.getElementById('activity-chart').getContext('2d');
+        new Chart(activityCtx, {
+          type: 'bar',
+          data: {
+            labels: data.user_activity.days,
+            datasets: [{
+              label: 'عدد المستخدمين النشطين',
+              data: data.user_activity.values,
+              backgroundColor: '#3498db'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: {
+                beginAtZero: true
+              }
+            }
+          }
+        });
+      });
   </script>
 </body>
 </html>

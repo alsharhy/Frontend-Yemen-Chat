@@ -8,29 +8,48 @@
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/emoji-picker-element@1.15.1/dist/style.css" />
   <style>
-    /* إضافة قسم الأخبار */
-    .news-section {
-      padding: 20px;
-      margin-top: 30px;
-      background: white;
-      border-radius: 12px;
-      box-shadow: var(--shadow);
+    #adminPanelBtn {
+      display: none;
     }
     
-    .news-item {
-      margin-bottom: 20px;
-      padding-bottom: 20px;
-      border-bottom: 1px solid var(--border-color);
+    .profile-image-container {
+      position: relative;
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 20px;
+      border-radius: 50%;
+      background: #eee;
+      overflow: hidden;
+      cursor: pointer;
     }
     
-    .news-item img {
+    .profile-image-container img {
       width: 100%;
-      border-radius: 8px;
-      margin-bottom: 10px;
+      height: 100%;
+      object-fit: cover;
     }
     
-    /* زر العودة */
-
+    .profile-upload-label {
+      position: absolute;
+      bottom: 5px;
+      right: 5px;
+      background: white;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 5px rgba(0,0,0,0.2);
+    }
+    
+    .profile-upload-label i {
+      color: #888;
+    }
+    
+    #profile-upload {
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -50,17 +69,19 @@
         <button class="header-btn" title="فتح المحادثات" onclick="toggleSidebar()">
           <i class="fas fa-comments"></i>
         </button>
-        <button class="header-btn" title="لوحة التحكم" id="adminPanelBtn" style="display: none;">
+        <button class="header-btn" title="لوحة التحكم" id="adminPanelBtn">
           <i class="fas fa-crown"></i>
         </button>
         <button class="header-btn" title="إعدادات" onclick="openSettings()">
           <i class="fas fa-cog"></i>
         </button>
-        <button class="header-btn" title="العودة للرئيسية" onclick="goToHome()">
-          <i class="fas fa-home"></i>
+        <button class="header-btn" onclick="openSupportChat()">
+          <i class="fas fa-headset"></i>
         </button>
       </div>
     </header>
+
+    <div id="sidebar-overlay"></div>
 
     <aside id="sidebar">
       <div class="sidebar-header">
@@ -121,7 +142,7 @@
             <i class="far fa-smile"></i>
           </button>
           <button class="input-btn" title="رفع ملف" onclick="togglePlusMenu()">
-            <i class="fas fa-paperclip"></i>
+            <极 class="fas fa-paperclip"></i>
           </button>
         </div>
       </div>
@@ -156,11 +177,12 @@
             <button class="btn btn-secondary" onclick="showApiSettings()">تغيير الـ API</button>
           </div>
           <div id="profile-settings">
-            <div style="text-align:center; margin-bottom: 20px;">
-              <div onclick="promptForImage()" style="width:100px;height:100px;border-radius:50%;background:#eee;overflow:hidden;margin:auto;position:relative;cursor:pointer">
-                <img id="profile-image" src="" style="width:100%;height:100%;object-fit:cover;display:none">
-                <span id="plus-icon" style="position:absolute;bottom:5px;left:5px;font-size:24px;color:#888;background:#fff;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 5px rgba(0,0,0,0.2)">+</span>
-              </div>
+            <div class="profile-image-container" onclick="document.getElementById('profile-upload').click()">
+              <img id="profile-image" src="" style="display:none">
+              <label class="profile-upload-label">
+                <i class="fas fa-plus"></i>
+              </label>
+              <input type="file" id="profile-upload" accept="image/*">
             </div>
             <div class="form-group">
               <label>الاسم الكامل:</label>
@@ -181,10 +203,13 @@
               <input type="password" id="api-key" placeholder="أدخل مفتاح API الخاص بك">
             </div>
           </div>
-        </div>
-        <div class="settings-footer">
-          <button class="btn btn-secondary" onclick="closeSettings()">إلغاء</button>
-          <button class="btn btn-primary" onclick="saveSettings()">حفظ</button>
+          
+          <!-- قسم تسجيل الخروج -->
+          <div class="form-group" style="margin-top: 30px;">
+            <button class="btn btn-logout" onclick="logout()">
+              <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -192,17 +217,13 @@
     <div id="emoji-container">
       <emoji-picker id="emoji-picker"></emoji-picker>
     </div>
-    
-    <div class="home-btn" onclick="goToHome()">
-      <i class="fas fa-home"></i>
-    </div>
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
   <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
   <script src="script.js"></script>
   <script>
-    // تحميل الأخبار عند بدء التشغيل
+    // عند تحميل الصفحة
     document.addEventListener('DOMContentLoaded', () => {
       loadNews();
       
@@ -210,69 +231,126 @@
       const userId = localStorage.getItem('user_id');
       if (!userId) {
         window.location.href = 'login.html';
+      } else {
+        // التحقق من صلاحيات المشرف
+        const isAdmin = localStorage.getItem('is_admin') === 'true';
+        if(isAdmin) {
+          const adminBtn = document.getElementById('adminPanelBtn');
+          if (adminBtn) {
+            adminBtn.style.display = 'block';
+            adminBtn.addEventListener('click', () => {
+              window.location.href = 'admin_panel.html';
+            });
+          }
+        }
+        
+        // معالجة رفع صورة الملف الشخصي
+        document.getElementById('profile-upload').addEventListener('change', function(e) {
+          if (e.target.files.length > 0) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = function(event) {
+              const img = document.getElementById('profile-image');
+              img.src = event.target.result;
+              img.style.display = 'block';
+              localStorage.setItem('profileImage', event.target.result);
+            }
+            
+            reader.readAsDataURL(file);
+          }
+        });
       }
     });
     
     // دالة لتحميل الأخبار
-    // دالة لتحميل الأخبار
-function loadNews() {
-  fetch("https://yemen-chat-version-8.onrender.com/news")
-    .then(res => res.json())
-    .then(news => {
-      const container = document.getElementById('news-container');
-      container.innerHTML = '';
-      
-      news.forEach(item => {
-        const newsItem = document.createElement('div');
-        newsItem.className = 'news-item';
-        
-        let imageHtml = '';
-        if (item.image_url) {
-          imageHtml = `<img src="${item.image_url}" alt="${item.title}">`;
-        }
-        
-        // محتوى مختصر (4 أسطر)
-        const shortContent = item.content.substring(0, 100) + (item.content.length > 100 ? '...' : '');
-        
-        newsItem.innerHTML = `
-          ${imageHtml}
-          <h3>${item.title}</h3>
-          <div class="news-content">
-            <p class="short-content">${shortContent}</p>
-            <p class="full-content" style="display: none;">${item.content}</p>
-          </div>
-          <span>${new Date(item.created_at).toLocaleDateString('ar-EG')}</span>
-          <button class="read-more-btn">عرض المزيد</button>
-        `;
-        container.appendChild(newsItem);
-      });
-      
-      // إضافة معالجات الأحداث لأزرار "عرض المزيد"
-      document.querySelectorAll('.read-more-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-          const newsItem = this.closest('.news-item');
-          const shortContent = newsItem.querySelector('.short-content');
-          const fullContent = newsItem.querySelector('.full-content');
-          const btnText = this.textContent;
+    function loadNews() {
+      fetch("https://yemen-chat-version-8.onrender.com/news")
+        .then(res => res.json())
+        .then(news => {
+          const container = document.getElementById('news-container');
+          container.innerHTML = '';
           
-          if (btnText === 'عرض المزيد') {
-            shortContent.style.display = 'none';
-            fullContent.style.display = 'block';
-            this.textContent = 'إغلاق';
-          } else {
-            shortContent.style.display = 'block';
-            fullContent.style.display = 'none';
-            this.textContent = 'عرض المزيد';
-          }
+          news.forEach(item => {
+            const newsItem = document.createElement('div');
+            newsItem.className = 'news-item';
+            
+            let imageHtml = '';
+            if (item.image_url) {
+              imageHtml = `<img src="${item.image_url}" alt="${item.title}">`;
+            }
+            
+            // محتوى مختصر (4 أسطر)
+            const shortContent = item.content.substring(0, 100) + (item.content.length > 100 ? '...' : '');
+            
+            newsItem.innerHTML = `
+              ${imageHtml}
+              <h3>${item.title}</h3>
+              <div class="news-content">
+                <p class="short-content">${shortContent}</p>
+                <p class="full-content" style="display: none;">${item.content}</p>
+              </div>
+              <span>${new Date(item.created_at).toLocaleDateString('ar-EG')}</span>
+              <button class="read-more-btn">عرض المزيد</button>
+            `;
+            container.appendChild(newsItem);
+          });
+          
+          // إضافة معالجات الأحداث لأزرار "عرض المزيد"
+          document.querySelectorAll('.read-more-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+              const newsItem = this.closest('.news-item');
+              const shortContent = newsItem.querySelector('.short-content');
+              const fullContent = newsItem.querySelector('.full-content');
+              const btnText = this.textContent;
+              
+              if (btnText === 'عرض المزيد') {
+                shortContent.style.display = 'none';
+                fullContent.style.display = 'block';
+                this.textContent = 'إغلاق';
+              } else {
+                shortContent.style.display = 'block';
+                fullContent.style.display = 'none';
+                this.textContent = 'عرض المزيد';
+              }
+            });
+          });
         });
-      });
-    });
-}
-    function goToHome() {
-      window.location.href = 'index.html';
     }
     
+    function openSupportChat() {
+      const userId = localStorage.getItem('user_id');
+      if (!userId) {
+        alert('الرجاء تسجيل الدخول أولاً');
+        window.location.href = 'login.html';
+        return;
+      }
+
+      // إنشاء محادثة دعم فني جديدة
+      fetch("https://yemen-chat-version-8.onrender.com/support-chats", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: userId })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          window.location.href = `support_chat.html?chat_id=${data.chat_id}`;
+        } else {
+          alert('حدث خطأ أثناء فتح الدردشة مع الدعم الفني');
+        }
+      });
+    }
     
+    function logout() {
+      localStorage.removeItem('is_admin');
+      localStorage.removeItem('user_id');
+      localStorage.removeItem('fullName');
+      localStorage.removeItem('username');
+      localStorage.removeItem('email');
+      localStorage.removeItem('profileImage');
+      window.location.href = 'login.html';
+    }
   </script>
 </body>
 </html>

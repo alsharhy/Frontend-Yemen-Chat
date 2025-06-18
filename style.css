@@ -109,21 +109,22 @@ header {
   transform: scale(1.05);
 }
 
-/* الشريط الجانبي */
+/* الشريط الجانبي - تحديث ليكون على اليسار */
 #sidebar {
   position: fixed;
   top: 70px;
-  right: 0;
+  left: 0;
   width: 300px;
   height: calc(100vh - 70px);
   background: white;
-  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
   padding: 20px;
   box-sizing: border-box;
   overflow-y: auto;
-  transform: translateX(100%);
+  transform: translateX(-100%);
   transition: transform 0.3s ease;
   z-index: 90;
+  direction: rtl;
 }
 
 #sidebar.visible {
@@ -131,7 +132,7 @@ header {
 }
 
 .sidebar-header {
-  display: flex;
+  display极 flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
@@ -166,6 +167,7 @@ header {
   transition: all 0.3s ease;
   margin-bottom: 20px;
   width: 100%;
+  justify-content: center;
 }
 
 #new-chat-btn:hover {
@@ -235,7 +237,6 @@ header {
   padding: 20px;
   overflow-y: auto;
   background-color: var(--background);
-  background-image: url("data:image/svg+xml,%3Csvg ..."); /* تم اختصاره */
 }
 
 .message {
@@ -300,7 +301,6 @@ header {
   background-color: white;
   gap: 10px;
   position: relative;
-  margin-bottom: 50px;
 }
 
 #input-area .input-group {
@@ -536,7 +536,7 @@ pre {
 
 .feature:hover {
   transform: translateY(-5px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 极.1);
 }
 
 .feature i {
@@ -650,6 +650,18 @@ pre {
   background: #e0e0e0;
 }
 
+.btn-logout {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  width: 100%;
+  margin-top: 20px;
+}
+
 /* حاوية الإيموجي الجديدة */
 #emoji-container {
   position: absolute;
@@ -686,6 +698,22 @@ emoji-picker {
   --search-padding: 10px 12px;
 }
 
+/* حل مشكلة القائمة الجانبية */
+#sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.3);
+  z-index: 80;
+}
+
+#sidebar.visible ~ #sidebar-overlay {
+  display: block;
+}
+
 /* شاشات صغيرة */
 @media (max-width: 768px) {
   #app {
@@ -717,8 +745,11 @@ emoji-picker {
     width: 280px;
     height: 350px;
   }
+  
+  #sidebar {
+    width: 250px;
+  }
 }
-
 
 /* إضافة في نهاية الملف */
 @media (max-width: 768px) {
@@ -800,8 +831,6 @@ emoji-picker {
   }
 }
 
-
-/* في نهاية ملف style.css */
 .news-item {
   margin-bottom: 20px;
   padding-bottom: 20px;

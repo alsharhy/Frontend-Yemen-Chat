@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>الدردشة مع الدعم الفني</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .chat-container {
+      max-width: 800px;
+      margin: 20px auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    
+    .chat-header {
+      background: linear-gradient(to right, #ff9800, #f57c00);
+      color: white;
+      padding: 15px;
+      text-align: center;
+    }
+    
+    .chat-messages {
+      padding: 20px;
+      height: 500px;
+      overflow-y: auto;
+      background: #f9f9f9;
+    }
+    
+    .message {
+      max-width: 70%;
+      margin-bottom: 15px;
+      padding: 10px 15px;
+      border-radius: 18px;
+      position: relative;
+    }
+    
+    .user-message {
+      background: #e3f2fd;
+      margin-left: auto;
+      border-bottom-right-radius: 0;
+    }
+    
+    .support-message {
+      background: #ffecb3;
+      margin-right: auto;
+      border-bottom-left-radius: 0;
+    }
+    
+    .message-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+    
+    .avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      margin-left: 10px;
+      object-fit: cover;
+    }
+    
+    .message-input {
+      display: flex;
+      padding: 15px;
+      background: white;
+      border-top: 1px solid #eee;
+    }
+    
+    .message-input input {
+      flex: 1;
+      padding: 10px 15px;
+      border: 1px solid #ddd;
+      border-radius: 25px;
+      margin-left: 10px;
+    }
+    
+    .send-btn, .file-btn {
+      background: #ff9800;
+      color: white;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    
+    .image-preview {
+      max-width: 200px;
+      margin-top: 10px;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <div class="chat-header">
+      <h2><i class="fas fa-headset"></i> الدردشة مع الدعم الفني</h2>
+    </div>
+    
+    <div class="chat-messages" id="chat-messages">
+      <!-- الرسائل ستظهر هنا -->
+    </div>
+    
+    <div class="message-input">
+      <input type="text" id="message-input" placeholder="اكتب رسالتك هنا..." onkeypress="if(event.key === 'Enter') sendMessage()">
+      <input type="file" id="file-input" accept="image/*" style="display: none">
+      <button class="file-btn" onclick="document.getElementById('file-input').click()">
+        <i class="fas fa-image"></i>
+      </button>
+      <button class="send-btn" onclick="sendMessage()">
+        <i class="fas fa-paper-plane"></i>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const chatId = new URLSearchParams(window.location.search).get('chat_id');
+    const userId = localStorage.getItem('user_id');
+    
+    if (!chatId || !userId) {
+      alert('خطأ في تحميل المحادثة');
+      window.location.href = 'index.html';
+    }
+    
+    // جلب الرسائل عند تحميل الصفحة
+    fetch(`https://yemen-chat-version-8.onrender.com/support-messages/${chatId}`)
+      .then(res => res.json())
+      .then(messages => {
+        renderMessages(messages);
+      });
+    
+    // رفع الصورة
+    document.getElementById('file-input').addEventListener('change', function(e) {
+      if (e.target.files.length > 0) {
+        const file = e.target.files[0];
+        const formData = new FormData();
+        formData.append('image', file);
+        
+        fetch('https://yemen-chat-version-8.onrender.com/upload', {
+          method: 'POST',
+          body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            sendMessage('', data.image_url);
+          }
+        });
+      }
+    });
+    
+    function sendMessage(text = null, image = null) {
+      const messageInput = document.getElementById('message-input');
+      const message = text || messageInput.value.trim();
+      
+      if (!message && !image) return;
+      
+      fetch(`https://yemen-chat-version-8.onrender.com/support-messages/${chatId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: userId,
+          message: message,
+          image_url: image
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          messageInput.value = '';
+          // جلب الرسائل مرة أخرى لتحديث المحادثة
+          fetch(`https://yemen-chat-version-8.onrender.com/support-messages/${chatId}`)
+            .then(res => res.json())
+            .then(messages => {
+              renderMessages(messages);
+            });
+        }
+      });
+    }
+    
+    function renderMessages(messages) {
+      const container = document.getElementById('chat-messages');
+      container.innerHTML = '';
+      
+      messages.forEach(msg => {
+        const isUser = msg.user_id == userId;
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${isUser ? 'user-message' : 'support-message'}`;
+        
+        let content = `<div class="message-header">
+                        <img src="${msg.profile_image || 'default-avatar.jpg'}" class="avatar">
+                        <strong>${msg.fullname}</strong>
+                      </div>`;
+        
+        if (msg.image_url) {
+          content += `<img src="${msg.image_url}" class="image-preview">`;
+        }
+        
+        if (msg.message) {
+          content += `<div class="message-content">${msg.message}</div>`;
+        }
+        
+        messageDiv.innerHTML = content;
+        container.appendChild(messageDiv);
+      });
+      
+      // التمرير لآخر رسالة
+      container.scrollTop = container.scrollHeight;
+    }
+  </script>
+</body>
+</html>
